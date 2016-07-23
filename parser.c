@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     size_t linecap = 100000;
     ssize_t linelen;
     int MAX_TOKENS = 10000;
-    jsmntok_t *tokens = (jsmntok_t*) malloc(MAX_TOKENS*sizeof(*tokens));
+    jsmntok_t *tokens = (jsmntok_t*) malloc(MAX_TOKENS * sizeof(*tokens));
     while ((linelen = getline(&line, &linecap, file)) > 0) {
         jsmn_init(&parser);
         int num_tokens = jsmn_parse(&parser, line, strlen(line), tokens, MAX_TOKENS);
@@ -54,10 +54,10 @@ int main(int argc, char **argv) {
         for (int i=0; i < num_tokens; i++) {
             jsmntok_t *token = &tokens[i];
             if (token->type == JSMN_STRING) {
-                if(strlen(id) == 0 && json_equals(line, token, "id") && tokens[i+1].type == JSMN_STRING) {
+                if (strlen(id) == 0 && json_equals(line, token, "id") && tokens[i+1].type == JSMN_STRING) {
                     json_read_string(line, &tokens[++i], id);
                 } else if (json_equals(line, token, "es") && tokens[i+1].type == JSMN_OBJECT) {
-                    if(strlen(word) ==0) {
+                    if (strlen(word) ==0) {
                         json_read_attribute_value(line, &tokens[i+1], "value", word);
                     } else {
                         json_read_attribute_value(line, &tokens[i+1], "value", definition);
