@@ -8,7 +8,6 @@ static void json_read_string(const char *line, jsmntok_t *token, char *out) {
     snprintf(out, token->end - token->start + 1, "%s", line + token->start);
 } 
 
-
 static bool json_equals(const char *line, jsmntok_t *token, const char *value) {
     return strncmp(line + token->start, value, token->end - token->start) == 0; 
 }
@@ -36,63 +35,43 @@ static const char *json_get_type(jsmntok_t *token) {
 
 int main(int argc, char **argv) {
     jsmn_parser parser;
-    jsmn_init(&parser);
     const char *filename = argv[1];
     FILE *file = fopen(filename, "r");
-    char *line = NULL;//malloc(100000* sizeof(*line));
+    char *line = NULL;
     size_t linecap = 100000;
     ssize_t linelen;
     int MAX_TOKENS = 10000;
     jsmntok_t *tokens = (jsmntok_t*) malloc(MAX_TOKENS*sizeof(*tokens));
-    //jsmntok_t tokens[500];
-    int line_num = 1;
     while ((linelen = getline(&line, &linecap, file)) > 0) {
         jsmn_init(&parser);
-        //int r = jsmn_parse(&parser, line, strlen(line), NULL, 254);
-        //if (r > 0) {
-            //jsmntok_t *tmp =  (jsmntok_t*) realloc(tokens, r*sizeof(jsmntok_t));
-            //if (tmp) { 
-                //tokens = tmp;
-                jsmn_init(&parser);
-                int r2 = jsmn_parse(&parser, line, strlen(line), tokens, MAX_TOKENS);
-                char id[16];
-                char word[64];
-                char definition[1024];
-                memset(id, 0, 16);
-                memset(word, 0, 64);
-                memset(definition, 0, 1024);
-                for (int i=0; i < r2; i++) {
-                    jsmntok_t *token = &tokens[i];
-/*
-                    printf("type %d (%s), start %d, end %d, size %d\n", 
-                        token->type, 
-                        json_get_type(token),
-                        token->start, token->end, token->size);
-*/
-                    if (token->type == JSMN_STRING) {
-                        if(strlen(id) == 0 && json_equals(line, token, "id") && tokens[i+1].type == JSMN_STRING) {
-                            json_read_string(line, &tokens[++i], id);
-                        } else if (json_equals(line, token, "es") && tokens[i+1].type == JSMN_OBJECT) {
-                            if(strlen(word) ==0)
-                                json_read_attribute_value(line, &tokens[i+1], "value", word);
-                            else
-                                json_read_attribute_value(line, &tokens[i+1], "value", definition);
-                        }
+        int num_tokens = jsmn_parse(&parser, line, strlen(line), tokens, MAX_TOKENS);
+        char id[16];
+        char word[64];
+        char definition[1024];
+        memset(id, 0, 16);
+        memset(word, 0, 64);
+        memset(definition, 0, 1024);
+        for (int i=0; i < num_tokens; i++) {
+            jsmntok_t *token = &tokens[i];
+            if (token->type == JSMN_STRING) {
+                if(strlen(id) == 0 && json_equals(line, token, "id") && tokens[i+1].type == JSMN_STRING) {
+                    json_read_string(line, &tokens[++i], id);
+                } else if (json_equals(line, token, "es") && tokens[i+1].type == JSMN_OBJECT) {
+                    if(strlen(word) ==0) {
+                        json_read_attribute_value(line, &tokens[i+1], "value", word);
+                    } else {
+                        json_read_attribute_value(line, &tokens[i+1], "value", definition);
                     }
                 }
-                if (strlen(id) && strlen(word) && strlen(definition)) {
-                    printf("%s\t%s\t%s\n", id, word, definition);
-                }
-            //}
-        //}
-        line_num++;
+            }
+        }
+        if (strlen(id) && strlen(word) && strlen(definition)) {
+            printf("%s\t%s\t%s\n", id, word, definition);
+        }
         linecap = 0;
         free(line);
         line = NULL;
     }
     free(tokens);
-
-
-    printf("BYE\n");
     return 0;
 }
