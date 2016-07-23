@@ -1,3 +1,32 @@
+/**
+ * -----------------------------------------------------------------------
+ * Wikidata Spanish definition parser
+ *
+ * Copyright (c) 2016 Carmen Alvarez
+ *
+ * License: Do what you want with this, but be warned it's probably buggy. 
+ * I don't guarantee that it works or does anything useful!
+ *
+ * -----------------------------------------------------------------------
+ * This program parses a Wikidata dump file from https://dumps.wikimedia.org/wikidatawiki/entities/
+ * and outputs a tab-separated-value file for the spanish definitions, of the format:
+ *
+ *     TAB-id-TAB-word-TAB-definition
+ *
+ * It relies on jsmn: http://zserge.com/jsmn.html
+ *
+ * Compilation: 
+ *     # Build jsmn:
+ *     hg clone http://bitbucket.org/zserge/jsmn jsmn
+ *     cd jsmn
+ *     make 
+ *
+ *     # Copy this file to the jsmn project folder (or set the -I and -L flags accordingly):
+ *     gcc -g parser.c -o parser -ljsmn -L .
+ *
+ * Running:
+ *     ./parser /path/to/wikidata-yyyyMMdd-all.json
+ */
 #include "jsmn.h"
 #include <stdio.h>
 #include <string.h>
@@ -54,12 +83,16 @@ int main(int argc, char **argv) {
         for (int i=0; i < num_tokens; i++) {
             jsmntok_t *token = &tokens[i];
             if (token->type == JSMN_STRING) {
+                // Get the word id
                 if (strlen(id) == 0 && json_equals(line, token, "id") && tokens[i+1].type == JSMN_STRING) {
                     json_read_string(line, &tokens[++i], id);
                 } else if (json_equals(line, token, "es") && tokens[i+1].type == JSMN_OBJECT) {
+                    // Get the word
                     if (strlen(word) ==0) {
                         json_read_attribute_value(line, &tokens[i+1], "value", word);
-                    } else {
+                    } 
+                    // Get the definition
+                    else {
                         json_read_attribute_value(line, &tokens[i+1], "value", definition);
                     }
                 }
