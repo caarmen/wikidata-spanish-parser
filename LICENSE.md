@@ -14,10 +14,11 @@ I do not like beer. Sorry Mr. Kamp. Cheers!
 
 ---
 
+
 License for the extracted definitions (definiciones.tsv):
 ---------------------------------------------------------
 The licensing is the same as the licensing for the full definitions database: 
 https://www.wikidata.org/wiki/Wikidata:Data_access#Access_to_dumps
 
-All structured data from the main and property namespace is available under the [Creative Commons CC0 License](https://creativecommons.org/publicdomain/zero/1.0/); text in the other namespaces is available under the [Creative Commons Attribution-ShareAlike License](https://creativecommons.org/licenses/by-sa/3.0/); additional terms may apply. By using this site, you agree to the Terms of Use and Privacy Policy.
+> All structured data from the main and property namespace is available under the [Creative Commons CC0 License](https://creativecommons.org/publicdomain/zero/1.0/); text in the other namespaces is available under the [Creative Commons Attribution-ShareAlike License](https://creativecommons.org/licenses/by-sa/3.0/); additional terms may apply.
 
