@@ -71,6 +71,7 @@ int main(int argc, char **argv) {
     ssize_t linelen;
     int MAX_TOKENS = 10000;
     jsmntok_t *tokens = (jsmntok_t*) malloc(MAX_TOKENS * sizeof(*tokens));
+    int line_number = 0;
     while ((linelen = getline(&line, &linecap, file)) > 0) {
         jsmn_init(&parser);
         int num_tokens = jsmn_parse(&parser, line, strlen(line), tokens, MAX_TOKENS);
@@ -104,7 +105,12 @@ int main(int argc, char **argv) {
         linecap = 0;
         free(line);
         line = NULL;
+        if (line_number % 10000 == 0) {
+            fprintf(stderr, "Read %dk lines\n", (line_number/1000));
+        }
+        line_number++;
     }
     free(tokens);
+    fprintf(stderr, "Done!\n");
     return 0;
 }
